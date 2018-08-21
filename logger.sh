@@ -34,6 +34,15 @@ function log() {
 }
 
 function main() {
+    # Checking if script log file exists and if not creating a new one.
+    # Note this command will fail if the rest of the path doesn't exist
+    if [[ ! -f "$SCRIPT_LOG_PATH" ]]; then
+        touch "$SCRIPT_LOG_PATH"
+    else
+        # A script log file exists, which means it has been run before.
+        log "yellow" "Script was run before."
+    fi
+    
     log "white" "example normal message"
     log "yellow" "example warning message"
     log "red" "example error message"
