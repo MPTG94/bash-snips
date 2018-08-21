@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ## Script Variables
 # User answer for input confirmation.
 answer=""

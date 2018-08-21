@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ## Color Variables
 # NC (No Color)
 NC='\033[0m'

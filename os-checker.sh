@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ## OS detection variables.
 # General OS Release file (available in newer OS).
 OS_RELEASE_FILE="os-release"
