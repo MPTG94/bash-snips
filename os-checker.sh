@@ -5,13 +5,17 @@
 OS_RELEASE_FILE="os-release"
 # General OS Release path.
 OS_RELEASE_PATH="/etc/$OS_RELEASE_FILE"
+# Oracle Linux OS Relase file.
+ORACLE_RELEASE_FILE="oracle-release"
+# Oracle Linux OS Release path.
+ORACLE_RELEASE_PATH="/etc/$ORACLE_RELEASE_FILE"
 # Redhat OS Release file.
 REDHAT_RELEASE_FILE="redhat-release"
-# General OS Release path.
+# RedHat OS Release path.
 REDHAT_RELEASE_PATH="/etc/$REDHAT_RELEASE_FILE"
 # CentOS OS Release file.
 CENTOS_RELEASE_FILE="centos-release"
-# General OS Release path.
+# CentOS OS Release path.
 CENTOS_RELEASE_PATH="/etc/$CENTOS_RELEASE_FILE"
 ##
 
@@ -57,6 +61,8 @@ function detect_os_ver() {
     log "white" "OS version detection started."
     if [[ -f "$OS_RELEASE_PATH" ]]; then
         parse_os_release
+        elif [[ -f "$ORACLE_RELEASE_PATH" ]]; then
+        parse_oracle_release
         elif [[ -f "$CENTOS_RELEASE_PATH" ]]; then
         parse_centos_release
         elif [[ -f "$REDHAT_RELEASE_PATH" ]]; then
@@ -69,8 +75,28 @@ function parse_os_release() {
     # OS is of a new variant.
     log "white" "os-release file deteceted."
     os_type="$(grep ID= "$OS_RELEASE_PATH" | grep -v VERSION | awk -F"=" '{print $2}' | tr -d "\"")"
-    log "white" "OS Distro is: $os_type"
+    if [[ "$os_type" -eq "ol" ]]; then
+        log "white" "OS Distro is: oracle"
+    else
+        log "white" "OS Distro is: $os_type"
+    fi
     os_release="$(grep VERSION_ID "$OS_RELEASE_PATH" | awk -F"=" '{print $2}' | tr -d "\"")"
+    log "white" "OS Release is: $os_release"
+    
+    # Oracle linux stores in /etc/os-release file the exact version (for example 7.5)
+    # So we take only the major release version and store in the $os_release variable for rpm search.
+    if [[ "$os_type" -eq "ol" ]]; then
+        os_release="$(echo $os_release | cut -c1)"
+    fi
+}
+
+# Function to parse /etc/oracle-release file.
+function parse_oracle_release() {
+    # OS is of new CentOS variant.
+    log "white" "oracle-release file detected."
+    os_type="$(awk '{print $1}' "$ORACLE_RELEASE_PATH" | tr '[:upper:]' '[:lower:]')"
+    log "white" "OS Distro is: $os_type"
+    os_release="$(awk '{print $5}' $ORACLE_RELEASE_PATH | awk -F"." '{print $1}')"
     log "white" "OS Release is: $os_release"
 }
 
